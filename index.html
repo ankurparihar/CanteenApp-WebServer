@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Canteen App Web Server</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+	body {
+		font-family: "Lato", sans-serif
+	}
+
+	#orders_list{
+		margin-left: 40px;
+	}
+	
+	#orders_list p{
+		margin-top: 25px;
+		margin-bottom: 5px;
+		font-weight: bold;
+	}
+
+	.order_table {
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		border-collapse: collapse;
+		width: 800px;
+	}
+
+	.order_table td,
+	.order_table th {
+		border: 1px solid #ddd;
+		padding: 8px;
+	}
+
+	.order_table tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+
+	.order_table tr:hover {
+		background-color: #ddd;
+	}
+
+	.order_table th {
+		padding-top: 12px;
+		padding-bottom: 12px;
+		text-align: left;
+		background-color: #4CAF50;
+		color: white;
+	}
+</style>
+
+<body>
+
+	<!-- Navbar -->
+	<div class="w3-top">
+		<div class="w3-bar w3-black w3-card">
+			<a href="#" class="w3-bar-item w3-button w3-padding-large">Zehreela Dhaba Web Server</a>
+		</div>
+	</div>
+
+	<!-- Page content -->
+	<div class="w3-content" style="max-width:2000px;margin-top:46px">
+
+		<!-- The Band Section -->
+		<div class="w3-container w3-content w3-right w3-padding-64"
+			style="max-width:800px; margin-right: 120px; position:fixed; right: 20px;" id="band">
+
+			<h2 class="w3-wide">QR Code</h2>
+			<p class="w3-opacity"><i>Scan this with our android app</i></p>
+			<img src="./imgs/qr-10.38.3.61.png" height="200px" width="200px" />
+		</div>
+
+		<div id="orders_list" class="w3-container w3-content w3-left w3-padding-64">
+		</div>
+
+		<script>
+			var orderCount = 0;
+			setInterval(() => {
+				loadJSONData();
+			}, 10000);
+
+			var orders;
+			var tableDiv = document.getElementById("orders_list");
+
+			function updateOrders() {
+				tableDiv.innerHTML = "";
+				var i = 1;
+				orders.forEach(order => {
+					var orderID = document.createElement("P");
+					orderID.innerHTML = "Order #" + i;
+					var table = document.createElement("Table");
+					table.classList.add("order_table");
+					var tableHeadRow = document.createElement("TR");
+					var tableHeadItem = document.createElement("TH");
+					var tableHeadQuantity = document.createElement("TH");
+					tableHeadItem.innerHTML = "Item";
+					tableHeadQuantity.innerHTML = "Quantity";
+					tableHeadRow.appendChild(tableHeadItem);
+					tableHeadRow.appendChild(tableHeadQuantity);
+					table.appendChild(tableHeadRow);
+					order.forEach(item => {
+						var tableRow = document.createElement("TR");
+						var tableRowItem = document.createElement("TD");
+						var tableRowQuantity = document.createElement("TD");
+						tableRowItem.innerHTML = item["name"];
+						tableRowQuantity.innerHTML = item["quantity"];
+						tableRow.appendChild(tableRowItem);
+						tableRow.appendChild(tableRowQuantity);
+						table.appendChild(tableRow);
+					});
+					tableDiv.appendChild(orderID);
+					tableDiv.appendChild(table);
+					++i;
+				});
+			}
+
+			function loadJSONData() {
+				var xhttp;
+				if (window.XMLHttpRequest) {
+					// code for modern browsers
+					xhttp = new XMLHttpRequest();
+				} else {
+					// code for IE6, IE5
+					xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						orders = JSON.parse(this.responseText);
+						if (orderCount != orders.length) {
+							orderCount = orders.length;
+							updateOrders();
+						}
+					}
+					else if (this.readyState == 4) {
+						displayError(this.status, this.statusText);
+					}
+				};
+				xhttp.open("GET", "orders.json?timestamp=" + Date.now(), true);
+				xhttp.send();
+			}
+
+			window.onload = loadJSONData;
+
+		</script>
+
+</body>
+
+</html>

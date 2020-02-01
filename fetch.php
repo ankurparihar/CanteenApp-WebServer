@@ -1,5 +1,6 @@
+<?php include 'constants.php'?>
 {
-	"name": "Zehreela Dhaba",
+	"name": "<?php echo $canteen_name?>",
 	"item_list": [
 		{
 			"name": "item 1",
